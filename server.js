@@ -3,20 +3,6 @@ const express = require('express')
 const app = express()
 const MongoClient = require('mongodb').MongoClient
 
-// app.listen(3000, function () {
-//     console.log('listening on 3000')
-// })
-
-// app.use(bodyParser.urlencoded({ extended: true }))
-
-// app.get('/', (req, res) => {
-//     res.sendFile(__dirname + '/index.html')
-// })
-
-// app.post('/quotes', (req, res) => {
-//     console.log(req.body)
-// })
-
 
 const connectionStr = 'mongodb+srv://windu:starwars_crud@cluster0.qrptoto.mongodb.net/?retryWrites=true&w=majority'
 MongoClient.connect(connectionStr)
@@ -25,13 +11,20 @@ MongoClient.connect(connectionStr)
         const db = client.db('quotes_crud')
         const quotesCollection = db.collection('quotes')
 
+        app.set('view engine', 'ejs')
+
         app.use(bodyParser.urlencoded({ extended: true }))
+        app.use(express.static('public'))
+        app.use(bodyParser.json())
 
         app.get('/', (req, res) => {
-            res.sendFile(__dirname + '/index.html')
-            const cursor = db.collection('quotes').find().toArray()
+            // res.sendFile(__dirname + '/index.html')
+            db.collection('quotes').find().toArray()
+                // .then(results => {
+                //     console.log(results)
+                // })
                 .then(results => {
-                    console.log(results)
+                    res.render('index.ejs', { quotes: results })
                 })
                 .catch(error => console.error(error))
         })
@@ -44,6 +37,8 @@ MongoClient.connect(connectionStr)
                 })
                 .catch(error => console.error(error))
         })
+
+
 
         app.listen(3000, function () {
             console.log('listening on 3000')
