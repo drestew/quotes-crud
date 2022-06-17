@@ -38,7 +38,24 @@ MongoClient.connect(connectionStr)
                 .catch(error => console.error(error))
         })
 
-
+        app.put('/quotes', (req, res) => {
+            quotesCollection.findOneAndUpdate(
+                { name: 'Darth Vader' },
+                {
+                    $set: {
+                        name: req.body.name,
+                        quote: req.body.quote
+                    }
+                },
+                {
+                    upsert: true
+                }
+            )
+                .then(result => {
+                    res.json('success')
+                })
+                .catch(error => console.error(error))
+        })
 
         app.listen(3000, function () {
             console.log('listening on 3000')
